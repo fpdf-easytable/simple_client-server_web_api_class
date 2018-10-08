@@ -1,32 +1,20 @@
 <?php
+ /*********************************************************************
+ * Web API Server                                                   *
+ *                                                                    *
+ * Version: 1.0                                                       *
+ * Date:    02-10-2018                                                *
+ * Author:  Dan Machado                                               *
+ * Require  php 5.6 or above                                          *
+ **********************************************************************/
 define('LOG_DIR', '/tmp/');
 define('LOG_FILE', 'API_LOG_ERROR');
 
 class WebService{
 
-	protected function class_loader($class){
-		/*	
-		$file='classes/' . $class . '.class.php';
-		if(file_exists($file)){
-			include_once $file;
-		}else {
-			include_once strtolower($file);
-		}
-		/**/
-	}
+	private $valid_key;
 
-	protected function outPut(&$response){
-		/*
-		ob_clean();
-		ob_start();
-		header('Content-Type: application/json');
-		header('Content-Length: ' . strlen($response));
-		print $response;
-		ob_end_flush();
-		/**/
-	}
-
-	public function __construct(){
+	public function __construct($URL_client){
 		spl_autoload_register(array($this, 'class_loader'));
 	}
 
@@ -142,6 +130,29 @@ class WebService{
 			$response=json_encode($ERROR);
 		}
 		$this->outPut($response);
+	}
+	
+	
+	protected function class_loader($class){
+		/*	
+		$file='classes/' . $class . '.class.php';
+		if(file_exists($file)){
+			include_once $file;
+		}else {
+			include_once strtolower($file);
+		}
+		/**/
+	}
+
+	protected function outPut(&$response){
+		/*
+		ob_clean();
+		ob_start();
+		header('Content-Type: application/json');
+		header('Content-Length: ' . strlen($response));
+		print $response;
+		ob_end_flush();
+		/**/
 	}
 }
 

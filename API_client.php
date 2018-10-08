@@ -1,5 +1,14 @@
 <?php
-define('API_LINK', 'http://localhost/API/API_Server/API_Server.php');
+ /*********************************************************************
+ * Web API Client                                                 *
+ *                                                                    *
+ * Version: 1.0                                                       *
+ * Date:    02-10-2018                                                *
+ * Author:  Dan Machado                                               *
+ * Require  php 5.6 or above                                          *
+ **********************************************************************/
+
+define('API_SERVER_URL', 'http://localhost/API/API_Server/API_Server.php');
 define('LOG_DIR', '/tmp/');
 define('LOG_FILE', 'API_CLIENT_LOG_ERROR');
 define('TIMEOUT', 30);
@@ -7,34 +16,14 @@ define('TIMEOUT', 30);
 class API_Client{
 
 	private $status_code,
-			  $url,
 			  $curl_options,
 			  $post_data,
 			  $response_headers,
 			  $body;
 
-	private function write_log($data_array){
-		$h=fopen(LOG_DIR . LOG_FILE, 'a');
-		fwrite($h, date("l jS \of F Y h:i:s A"). "\n");
-		foreach($data_array as $data){
-			if(is_object($data) || is_array($data)){
-			  fwrite($h, var_export($data, true) . "\n");
-			}
-			else{
-			  fwrite($h, "$data\n");
-			}
-		}
-		fwrite($h, "*************************\n");
-	  	fclose($h);
-	}
-
 	public function __construct($curl_opts=null){
-		if(defined(API_LINK)) {
-			$this->url=API_LINK;
-		}
-
   		$this->curl_options=array(
-				CURLOPT_URL => API_LINK,
+				CURLOPT_URL => API_SERVER_URL,
 				CURLOPT_HEADER=>true,
 				CURLOPT_SSL_VERIFYPEER=>false,
 				CURLOPT_HTTPHEADER=>array('Expect:'),
@@ -55,6 +44,7 @@ class API_Client{
 		$this->response_headers=array();
 	}
 
+
 	public function Resquest($endpoint, $params, $const_param=null){
 		$result=array('ResponseCode'=>500,'Message'=>'', 'Content'=>'');
 		
@@ -68,11 +58,9 @@ class API_Client{
 		curl_setopt_array($ch, $this->curl_options);
 		$response=curl_exec($ch);
 		
-		
 		if(curl_errno($ch)==0 ){
 			$this->status_code=curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			
-			//$this->write_log(array($this->status_code));
 			$response=explode("\r\n\r\n", $response);
 			$header=$response[0];
 			$tmp=explode("\r\n", $header);
@@ -89,7 +77,6 @@ class API_Client{
 			}
 		}else {
 			$result['Message']='Error Code: ' . curl_errno($ch) . ' Error: ' . curl_error($ch);
-			//$this->write_log(array('Last Error:', error_get_last(), 'API CURL ERROR:', $result['CurlErrorCode'], $result['CurlErrorResponse']));
 		}
 
 		curl_close($ch);
@@ -107,7 +94,6 @@ class API_Client{
 }
 
 
-$API=new API_Client();
 
 
 
