@@ -8,7 +8,6 @@
  * Require  php 5.6 or above                                          *
  **********************************************************************/
 
-define('API_SERVER_URL', 'http://localhost/API/API_Server/API_Server.php');
 define('LOG_DIR', '/tmp/');
 define('LOG_FILE', 'API_CLIENT_LOG_ERROR');
 define('TIMEOUT', 30);
@@ -21,9 +20,9 @@ class API_Client{
 			  $response_headers,
 			  $body;
 
-	public function __construct($curl_opts=null){
+	public function __construct($URL, $curl_opts=null){
   		$this->curl_options=array(
-				CURLOPT_URL => API_SERVER_URL,
+				CURLOPT_URL => $URL,
 				CURLOPT_HEADER=>true,
 				CURLOPT_SSL_VERIFYPEER=>false,
 				CURLOPT_HTTPHEADER=>array('Expect:'),

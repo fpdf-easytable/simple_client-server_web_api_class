@@ -179,7 +179,6 @@ class WebService2 extends WebService{
 
 
 $web_service=new WebService2();
-//echo 'dddd';
 
 $web_service->process_request();
 
