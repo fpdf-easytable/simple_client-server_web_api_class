@@ -1,8 +1,5 @@
 <?php
 
-
-
-
 class Demo {
 	
 	private function error($id){
@@ -42,6 +39,7 @@ class Demo {
 			$returnarray=array('ResponseCode'=>200,
 		                   'ResponseMessage'=>'', 
 		                   'Content'=>$this->$str);
+		                   //throw new zc\Exception('sfsdfsdf');
 		}
 		return $returnarray;
 	}

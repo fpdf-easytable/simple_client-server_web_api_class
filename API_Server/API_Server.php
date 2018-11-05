@@ -14,10 +14,9 @@ class WebService{
 
 	private $valid_key;
 
-	public function __construct($URL_client){
+	public function __construct(){
 		spl_autoload_register(array($this, 'class_loader'));
 	}
-
 
 	private function HTML_entities(&$array){
 		foreach($array as $k=>$v){
@@ -47,13 +46,8 @@ class WebService{
 		fclose($h);
 	}
 
-
-
-	//protected function shutdown_function(){
 	function __destruct(){
 		$error=error_get_last();
-		//$this->write_debugger(array('fff'));
-	//*
 		if($error!==NULL){
 			$error_codes=array(
 				'1'=>"E_ERROR 	1 	A fatal run-time error, that can't be recovered from. The execution of the script is stopped immediately.",
@@ -74,9 +68,9 @@ class WebService{
 				//32767 E_ALL 	32767 	All errors and warnings, except of level E_STRICT prior to PHP 5.4.0.
 			);
 			if(!headers_sent() && isset($error_codes[$error['type']])) {
-				$this->write_debugger(array("FATAL_ERROR:", $er, $error));
+				$this->write_debugger(array("FATAL_ERROR:", $error));
 				$response=json_encode(array('ResponseCode'=>500,'Message'=>$error));
-				$this->outPut($response);
+				self::outPut($response);
 			}else{
 				$this->write_debugger(array("UNKNOWN ERROR:", $error, $_POST));
 			}
@@ -102,6 +96,7 @@ class WebService{
 							if(is_array($response)) {
 								$this->HTML_entities($response);
 								$response=json_encode($response);
+								
 							}
 							else{
 								$ERROR['Message']='The result of the method is not an array';
@@ -114,10 +109,8 @@ class WebService{
 					}
 				}
 				catch (Exception $e){
-					//$this->write_debugger(array($e));
 					$ERROR['Message']=$e->getMessage();
 				}
-				
 			}
 			else{
 				$ERROR['Message']='Endpoint:' . $_POST['endpoint'] . ', is invalid.';		
@@ -129,30 +122,25 @@ class WebService{
 		if($response==''){
 			$response=json_encode($ERROR);
 		}
-		$this->outPut($response);
+		
+		self::outPut($response);
 	}
 	
-	
-	protected function class_loader($class){
-		/*	
-		$file='classes/' . $class . '.class.php';
-		if(file_exists($file)){
-			include_once $file;
-		}else {
-			include_once strtolower($file);
-		}
-		/**/
+	public static function Uncaught_Exception($exception){
+		$error=$exception->getMessage() . ' File: ' . $exception->getFile() . ' Line: ' . $exception->getLine();
+		$response=json_encode(array('ResponseCode'=>500,'Message'=>$error));
+		self::outPut($response);
 	}
 
-	protected function outPut(&$response){
-		/*
+	protected function class_loader($class){}
+
+	protected static function outPut(&$response){
 		ob_clean();
 		ob_start();
 		header('Content-Type: application/json');
 		header('Content-Length: ' . strlen($response));
 		print $response;
 		ob_end_flush();
-		/**/
 	}
 }
 
@@ -167,20 +155,12 @@ class WebService2 extends WebService{
 		}
 	}
 
-	protected function outPut(&$response){
-		ob_clean();
-		ob_start();
-		header('Content-Type: application/json');
-		header('Content-Length: ' . strlen($response));
-		print $response;
-		ob_end_flush();
-	}
 }
 
+set_exception_handler('WebService2::Uncaught_Exception');
 
 $web_service=new WebService2();
 
 $web_service->process_request();
 
-//
 ?>

@@ -72,7 +72,6 @@ class API_Client{
 			if(!$result=@ json_decode($this->body, true)){
 				$result['ResponseCode']=$this->status_code;
 				$result['Meta']=$this->response_headers;
-				//$this->write_log(array('dddd'));
 			}
 		}else {
 			$result['Message']='Error Code: ' . curl_errno($ch) . ' Error: ' . curl_error($ch);
